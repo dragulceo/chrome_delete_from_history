@@ -1,14 +1,29 @@
 <!doctype html>
 <html>
-    <head>
-        <link href="styles/main.css" rel="stylesheet">
-        <!-- build:js scripts/popup.js -->
-        <script src="scripts/popup.js"></script>
-        <!-- endbuild -->
-    </head>
-    <body>
-        <!-- CHROME EXTENSION POPUP -->
-		<input type="text" name="pattern" id="inputPattern" value="">
-		<input type="button" value="Delete" id="deleteButton">
-    </body>
+<head>
+<link href="styles/main.css" rel="stylesheet">
+<!-- build:js scripts/popup.js -->
+<script src="scripts/popup.js"></script>
+<!-- endbuild -->
+</head>
+<body>
+<!-- CHROME EXTENSION POPUP -->
+<form>
+
+	<label for="inputPattern">Enter filter patern</label>
+	<input type="text" name="pattern" id="inputPattern" value="">
+
+	<label for="inputPattern">Find in</label>
+	<select name="selectFields" id="selectFields">
+		<option value="0">Title and URL</option>
+		<option value="1">URL</option>
+		<option value="2">Title</option>
+	</select>
+
+	<label for="inputPattern">Are you sure you want to delete?</label>
+	<input type="checkbox" name="cofirmDelete" id="checkboxConfirmDelete" value="">
+
+	<input type="button" value="Delete" id="deleteButton">
+</form>
+</body>
 </html>
