@@ -1,0 +1,18 @@
+{
+  "appName": {
+    "message": "chrome_delete_from_history",
+    "description": "The name of the application"
+  },
+  "appDescription": {
+    "message": "Deletes entries from history based on a pattern",
+    "description": "The description of the application"
+  },
+  "buttonDelete": {
+	"message": "Delete",
+	"description": "Delete"
+  },
+  "confirmDelete": {
+	"message": "Are you sure you want to delete items that match the entered pattern?",
+	"description": "Confirm deletion"
+  }
+}
