@@ -1,11 +1,13 @@
-(function() {
-
-
-     function run(items, search) {
+/* jshint -W015 */
+/* global postMessage: true, addEventListener: true */
+(function () {
+     'use strict';
+     var run = function run(items, search) {
           var n = items.length,
-               matcher = new RegExp(search.pattern, "i"),
-               url_only = search.url_only || false,
-               title_only = search.title_only || false,
+               item,
+               matcher = new RegExp(search.pattern, 'i'),
+               urlOnly = search.urlOnly || false,
+               titleOnly = search.titleOnly || false,
                filtered = [],
                total = n,
                step = Math.floor(n / 20);
@@ -18,16 +20,15 @@
                     });
                }
                item = items[n];
-               if ((!title_only && item.url.match(matcher)) || (!url_only && item.title.match(matcher))) {
+               if ((!titleOnly && item.url.match(matcher)) || (!urlOnly && item.title.match(matcher))) {
                     filtered.push(item);
                }
           }
           return filtered;
-     }
+     };
 
 
-     this.addEventListener('message', function(e) {
+     addEventListener('message', function (e) {
           return postMessage(run(e.data.items, e.data.search));
      });
-
-}).call(this);
+})();

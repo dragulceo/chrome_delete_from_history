@@ -1,4 +1,4 @@
-/*jshint camelcase: false*/
+/* camelcase: false*/
 // Generated on 2013-05-08 using generator-chrome-extension 0.1.1
 'use strict';
 var mountFolder = function (connect, dir) {
@@ -108,7 +108,7 @@ module.exports = function (grunt) {
         compass: {
             options: {
                 sassDir: '<%= yeoman.app %>/styles',
-                cssDir: '.tmp/styles',
+                cssDir: '<%= yeoman.app %>/styles',
                 imagesDir: '<%= yeoman.app %>/images',
                 javascriptsDir: '<%= yeoman.app %>/scripts',
                 fontsDir: '<%= yeoman.app %>/styles/fonts',

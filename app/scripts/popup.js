@@ -1,11 +1,15 @@
-(function() {
+/* jshint -W015 */
+/* globals Mustache: true */
+(function () {
      'use strict';
      var console = chrome.extension.getBackgroundPage().console,
           oldOnLoad, lastDeletedItems, progress, status, SELECT_VALUE_URL_ONLY = 1,
           SELECT_VALUE_TITLE_ONLY = 2,
           PROGRESS_SEARCH_FINISHED = 'finished',
-          PROGRESS_SEARCH_STARTED = 'started';
-     window.onerror = function() {
+          PROGRESS_SEARCH_STARTED = 'started',
+          PROGRESS_SEARCH_RESET = 'reset';
+
+     window.onerror = function () {
           console.error(arguments);
      };
 
@@ -13,19 +17,30 @@
           return document.getElementById(id);
      }
 
-     function createElement(id, element) {
-          var el = document.createElement(element || 'span');
-          el.setAttribute('id', id);
-          return el;
+     function setUpBodyConsideringLanguage() {
+          var n, keys, key, messages = {}, template = $('main').innerHTML,
+               keyRegExp = new RegExp('^\\{\\{(.*)\\}\\}$'),
+               body = document.querySelector('body');
+          body.style.display = 'none';
+          keys = template.match(/\{\{([^\}]*)\}\}/g);
+          console.log(keys);
+          n = keys.length;
+          while (n--) {
+               key = keys[n].replace(keyRegExp, '$1');
+               //console.log(key, key.replace(/^\{\{(.*)\}\}$/, '$1'));
+               messages[key] = chrome.i18n.getMessage(key);
+          }
+          console.log(messages);
+          body.innerHTML = Mustache.render(template, messages);
+          body.style.display = 'block';
      }
 
      function filterResults(items, search, callback) {
           var worker;
           worker = new Worker('scripts/filter_worker.js');
-          worker.addEventListener('message', function(e) {
+          worker.addEventListener('message', function (e) {
                if (e.data.type && e.data.type === 'progress') {
-                     updateProgress(e.data.current / e.data.total * 100);
-					 log(progress.value + '%');
+                    updateProgress(e.data.current / e.data.total * 100);
                } else {
                     callback(e.data);
                     worker.terminate();
@@ -40,7 +55,7 @@
      function updateProgress(typeOrValue) {
           var value = 0,
                SEARCH_PERCENT = 50;
-          if (typeof typeOrValue === "string") {
+          if (typeof typeOrValue === 'string') {
                switch (typeOrValue) {
                     case PROGRESS_SEARCH_FINISHED:
                          value = SEARCH_PERCENT;
@@ -48,28 +63,27 @@
                     case PROGRESS_SEARCH_STARTED:
                          value = 1;
                          break;
+                    case PROGRESS_SEARCH_RESET:
+                         value = 0;
+                         break;
                }
           } else {
                value = SEARCH_PERCENT + typeOrValue / (100 / SEARCH_PERCENT);
           }
-		  log(value);
           progress.value = value / 100;
      }
 
      function onLoad() {
-          var button = $('deleteButton'),
-               body = document.querySelector('body');
-          button.setAttribute('value', chrome.i18n.getMessage('buttonDelete'));
-          button.addEventListener('click', onClickDelete);
+          //button.addEventListener('click', onClickDelete);
+          setUpBodyConsideringLanguage();
+          $('deleteForm').addEventListener('submit', function (e) {
+               e.preventDefault();
+               onClickDelete();
+               return false;
+          });
 
-          progress = createElement('progress', 'progress'); 
-		  progress.value = 0;
-          body.appendChild(progress);
-
-
-          status = createElement('staus', 'p');
-          body.appendChild(status);
-          status.innerHTML = "-";
+          progress = $('progress');
+          status = $('status');
      }
 
      function log(str) {
@@ -78,8 +92,7 @@
 
      function deleteHistoryItems(items) {
           var n = items.length,
-               deleted = n,
-               counter, counterValue;
+               deleted = n;
           log('Deleting ' + n + ' items');
           while (n--) {
                chrome.history.deleteUrl({
@@ -91,19 +104,27 @@
           return deleted;
      }
 
+     function finishDelete() {
+          log('Done');
+          log('------------------------');
+          updateProgress(PROGRESS_SEARCH_RESET);
+     }
+
      function deleteAllHistoryItems(search) {
-          var fn, searchCallback, filterCallback;
+          var searchCallback, filterCallback;
           log('Looking for pattern: ' + search.pattern);
-          filterCallback = function(items) {
-               console.log('Filtered items: ' + items.length);
+          filterCallback = function (items) {
+               console.log('Items found: ' + items.length);
                deleteHistoryItems(items);
+               finishDelete();
           };
-          searchCallback = function(items) {
+          searchCallback = function (items) {
                updateProgress(PROGRESS_SEARCH_FINISHED);
                if (items.length > 0) {
+                    console.log('Filtering items (' + items.length + ')');
                     filterResults(items, search, filterCallback);
                } else {
-                    log('Done');
+                    finishDelete();
                }
           };
           updateProgress(PROGRESS_SEARCH_STARTED);
@@ -118,12 +139,10 @@
      function onClickDelete() {
           //chrome.window.
           /*
-		if(confirm("are")) {
-		}
 		if(confirm(chrome.i18n.getMessage('confirmDelete'))) {
 		//	alert('ok');
 		}*/
-          var searchFields, selectFields = $('selectFields'),
+          var selectFields = $('selectFields'),
                checkboxConfirmDelete = $('checkboxConfirmDelete'),
                inputPattern = $('inputPattern');
 
@@ -135,15 +154,15 @@
                checkboxConfirmDelete.checked = false;
                deleteAllHistoryItems({
                     pattern: inputPattern.value,
-                    url_only: selectFields.value === SELECT_VALUE_URL_ONLY,
-                    title_only: selectFields.value == SELECT_VALUE_TITLE_ONLY
+                    urlOnly: selectFields.value === SELECT_VALUE_URL_ONLY,
+                    titleOnly: selectFields.value === SELECT_VALUE_TITLE_ONLY
 
                });
           }
      }
 
      oldOnLoad = window.onload;
-     window.onload = function() {
+     window.onload = function () {
           if (oldOnLoad) {
                oldOnLoad();
           }

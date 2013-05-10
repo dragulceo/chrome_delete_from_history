@@ -1,18 +1,42 @@
 {
   "appName": {
-    "message": "chrome_delete_from_history",
+    "message": "Delete from history",
     "description": "The name of the application"
   },
   "appDescription": {
     "message": "Deletes entries from history based on a pattern",
     "description": "The description of the application"
   },
-  "buttonDelete": {
-	"message": "Delete",
-	"description": "Delete"
+  "deleteButton": {
+    "message": "Delete",
+    "description": "Delete"
   },
   "confirmDelete": {
-	"message": "Are you sure you want to delete items that match the entered pattern?",
-	"description": "Confirm deletion"
+    "message": "Are you sure you want to delete items that match the filters?",
+    "description": "Confirm deletion message"
+  },
+  "legendTitle": {
+    "message": "Delete from history",
+    "description": "Title for the form legend"
+  },
+  "labelPattern": {
+    "message": "Pattern",
+    "description": "Title for the input pattern"
+  },
+  "labelFileds": {
+    "message": "Search in",
+    "description": "Title for the select with fields"
+  },
+  "optionTitleAndURL": {
+    "message": "Title and URL",
+    "description": "Text for the select option used to search in title and url"
+  },
+  "optionTitle": {
+    "message": "Title",
+    "description": "Text for the select option used to search in title only"
+  },
+  "optionURL": {
+    "message": "URL",
+    "description": "Text for the select option used to search in URL only"
   }
 }
