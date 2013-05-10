@@ -37,7 +37,7 @@
 
      function filterResults(items, search, callback) {
           var worker;
-          worker = new Worker('scripts/filter_worker.js');
+          worker = new Worker('scripts/workers/filter_worker.js');
           worker.addEventListener('message', function (e) {
                if (e.data.type && e.data.type === 'progress') {
                     updateProgress(e.data.current / e.data.total * 100);
